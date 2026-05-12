@@ -19,6 +19,16 @@ Abra o arquivo `index.html` no navegador para iniciar o jogo.
 
 O projeto saiu de um único arquivo com um code noodle e passou a usar uma organização em MVC. Além disso, o estado do jogo foi centralizado no `Model`, os nomes das variáveis ficaram mais claros, os números mágicos foram agrupados em configurações e os dicionários passaram a ser validados para evitar palavras com tamanho incorreto.
 
+### Testes manuais realizados
+
+- Seleção de idioma em português e inglês
+- Entrada de letras no tabuleiro
+- Uso de backspace
+- Envio da tentativa com Enter
+- Atualização de score
+- Avanço de rodada após acerto
+- Encerramento da partida após atingir o limite de tentativas
+
 ## Code Smells e soluções
 
 ### CS.1: God file (ausência de separação de responsabilidades)
