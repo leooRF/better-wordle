@@ -1,85 +1,84 @@
+function comecar(idioma) {
+    GameModel.startGame(idioma);
 
-        // Função que mistura controle de fluxo com UI
-        function comecar(idioma) {
-            i_escolhido = idioma;
-            document.getElementById('tela-inicio').style.display = 'none';
-            document.getElementById('tela-jogo').style.display = 'flex';
+    document.getElementById("tela-inicio").style.display = "none";
+    document.getElementById("tela-jogo").style.display = "flex";
 
-            if (idioma === 'pt') {
-                document.getElementById('msg-instr').innerText = "Tente adivinhar a palavra de 5 letras.";
+    if (idioma === "pt") {
+        document.getElementById("msg-instr").innerText = "Tente adivinhar a palavra de 5 letras.";
+    } else {
+        document.getElementById("msg-instr").innerText = "Guess the 5-letter word.";
+    }
+
+    desenhar();
+}
+
+function desenhar() {
+    const boardElement = document.getElementById("board");
+    boardElement.innerHTML = "";
+
+    for (let rowIndex = 0; rowIndex < GameModel.maxRows; rowIndex++) {
+        const rowElement = document.createElement("div");
+        rowElement.className = "linha";
+
+        for (let columnIndex = 0; columnIndex < GameModel.maxColumns; columnIndex++) {
+            const tileElement = document.createElement("div");
+            tileElement.className = "tile";
+            tileElement.id = "t-" + rowIndex + "-" + columnIndex;
+            rowElement.appendChild(tileElement);
+        }
+
+        boardElement.appendChild(rowElement);
+    }
+}
+
+window.onkeydown = function (event) {
+    if (GameModel.isGameOver || GameModel.selectedLanguage === "") return;
+
+    const key = event.key.toUpperCase();
+
+    if (key === "BACKSPACE" && GameModel.currentColumn > 0) {
+        GameModel.currentColumn--;
+        GameModel.board[GameModel.currentRow][GameModel.currentColumn] = "";
+        document.getElementById("t-" + GameModel.currentRow + "-" + GameModel.currentColumn).innerText = "";
+    } else if (key === "ENTER" && GameModel.currentColumn === GameModel.maxColumns) {
+        const userWord = GameModel.board[GameModel.currentRow].join("");
+
+        for (let columnIndex = 0; columnIndex < GameModel.maxColumns; columnIndex++) {
+            const tile = document.getElementById("t-" + GameModel.currentRow + "-" + columnIndex);
+
+            if (userWord[columnIndex] === GameModel.secretWord[columnIndex]) {
+                tile.style.background = "#538d4e";
+                GameModel.score += GameModel.correctScore;
+            } else if (GameModel.secretWord.includes(userWord[columnIndex])) {
+                tile.style.background = "#b59f3b";
+                GameModel.score += GameModel.presentScore;
             } else {
-                document.getElementById('msg-instr').innerText = "Guess the 5-letter word.";
+                tile.style.background = "#3a3a3c";
             }
 
-            p_s = dic[i_escolhido][Math.floor(Math.random() * dic[i_escolhido].length)].toUpperCase();
+            tile.style.borderColor = "transparent";
+        }
+
+        document.getElementById("score-val").innerText = GameModel.score;
+
+        if (userWord === GameModel.secretWord) {
+            alert(GameModel.selectedLanguage === "pt" ? "Acertou!" : "Correct!");
+            GameModel.startNextRound();
+            document.getElementById("round-val").innerText = GameModel.round;
             desenhar();
-        }
+        } else {
+            GameModel.currentRow++;
+            GameModel.currentColumn = 0;
 
-        function desenhar() {
-            const b = document.getElementById("board");
-            b.innerHTML = "";
-            for (let i = 0; i < 6; i++) {
-                let row = document.createElement("div");
-                row.className = "linha";
-                for (let j = 0; j < 5; j++) {
-                    let t = document.createElement("div");
-                    t.className = "tile";
-                    t.id = "t-" + i + "-" + j;
-                    row.appendChild(t);
-                }
-                b.appendChild(row);
+            if (GameModel.currentRow === GameModel.maxRows) {
+                alert("Fim/End! Word: " + GameModel.secretWord);
+                GameModel.isGameOver = true;
             }
         }
-
-        window.onkeydown = function (e) {
-            if (end || i_escolhido === '') return;
-            let k = e.key.toUpperCase();
-
-            if (k === "BACKSPACE" && c_a > 0) {
-                c_a--;
-                m[r_a][c_a] = "";
-                document.getElementById("t-" + r_a + "-" + c_a).innerText = "";
-            }
-            else if (k === "ENTER" && c_a === 5) {
-                let u_w = m[r_a].join("");
-
-                // Lógica de cores e pontuação (Tudo acoplado)
-                for (let i = 0; i < 5; i++) {
-                    let tile = document.getElementById("t-" + r_a + "-" + i);
-                    if (u_w[i] === p_s[i]) {
-                        tile.style.background = "#538d4e";
-                        sc += 10;
-                    } else if (p_s.includes(u_w[i])) {
-                        tile.style.background = "#b59f3b";
-                        sc += 5;
-                    } else {
-                        tile.style.background = "#3a3a3c";
-                    }
-                    tile.style.borderColor = "transparent";
-                }
-
-                document.getElementById("score-val").innerText = sc;
-
-                if (u_w === p_s) {
-                    alert(i_escolhido === 'pt' ? "Acertou!" : "Correct!");
-                    rd++;
-                    document.getElementById("round-val").innerText = rd;
-                    r_a = 0; c_a = 0;
-                    p_s = dic[i_escolhido][Math.floor(Math.random() * dic[i_escolhido].length)].toUpperCase();
-                    m = [["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""], ["", "", "", "", ""]];
-                    desenhar();
-                } else {
-                    r_a++;
-                    c_a = 0;
-                    if (r_a === 6) {
-                        alert("Fim/End! Word: " + p_s);
-                        end = true;
-                    }
-                }
-            }
-            else if (/^[A-Z]$/.test(k) && c_a < 5) {
-                m[r_a][c_a] = k;
-                document.getElementById("t-" + r_a + "-" + c_a).innerText = k;
-                c_a++;
-            }
-        };
+    } else if (/^[A-Z]$/.test(key) && GameModel.currentColumn < GameModel.maxColumns) {
+        GameModel.board[GameModel.currentRow][GameModel.currentColumn] = key;
+        document.getElementById("t-" + GameModel.currentRow + "-" + GameModel.currentColumn).innerText = key;
+        GameModel.currentColumn++;
+    }
+};
