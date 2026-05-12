@@ -5,22 +5,18 @@ const GameView = {
     },
 
     showInstructions(language) {
-        const message = language === "pt"
-            ? "Tente adivinhar a palavra de 5 letras."
-            : "Guess the 5-letter word.";
-
-        document.getElementById("msg-instr").innerText = message;
+        document.getElementById("msg-instr").innerText = GameModel.messages.instructions[language];
     },
 
     renderBoard() {
         const boardElement = document.getElementById("board");
         boardElement.innerHTML = "";
 
-        for (let rowIndex = 0; rowIndex < GameModel.maxRows; rowIndex++) {
+        for (let rowIndex = 0; rowIndex < GameModel.settings.maxRows; rowIndex++) {
             const rowElement = document.createElement("div");
             rowElement.className = "linha";
 
-            for (let columnIndex = 0; columnIndex < GameModel.maxColumns; columnIndex++) {
+            for (let columnIndex = 0; columnIndex < GameModel.settings.maxColumns; columnIndex++) {
                 const tileElement = document.createElement("div");
                 tileElement.className = "tile";
                 tileElement.id = "t-" + rowIndex + "-" + columnIndex;
@@ -50,10 +46,10 @@ const GameView = {
     },
 
     showWinMessage(language) {
-        alert(language === "pt" ? "Acertou!" : "Correct!");
+        alert(GameModel.messages.win[language]);
     },
 
     showGameOverMessage(secretWord) {
-        alert("Fim/End! Word: " + secretWord);
+        alert(GameModel.messages.gameOverPrefix + secretWord);
     }
 };

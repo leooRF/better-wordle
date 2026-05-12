@@ -1,12 +1,31 @@
 const GameModel = {
-    dictionaries: {
+    settings: {
+        maxRows: 6,
+        maxColumns: 5,
+        correctScore: 10,
+        presentScore: 5
+    },
+    feedbackColors: {
+        correct: "#538d4e",
+        present: "#b59f3b",
+        absent: "#3a3a3c"
+    },
+    messages: {
+        instructions: {
+            pt: "Tente adivinhar a palavra de 5 letras.",
+            en: "Guess the 5-letter word."
+        },
+        win: {
+            pt: "Acertou!",
+            en: "Correct!"
+        },
+        gameOverPrefix: "Fim/End! Word: "
+    },
+    rawDictionaries: {
         pt: ["TESTE", "CLASSE", "DADOS", "LOGIC", "PILHA", "SUITE"],
         en: ["CLEAN", "SMELL", "PRINT", "CODE", "FILES", "STACK"]
     },
-    maxRows: 6,
-    maxColumns: 5,
-    correctScore: 10,
-    presentScore: 5,
+    dictionaries: {},
     selectedLanguage: "",
     secretWord: "",
     currentRow: 0,
@@ -17,7 +36,20 @@ const GameModel = {
     board: [],
 
     createEmptyBoard() {
-        return Array.from({ length: this.maxRows }, () => Array(this.maxColumns).fill(""));
+        return Array.from({ length: this.settings.maxRows }, () => Array(this.settings.maxColumns).fill(""));
+    },
+
+    validateWords(words) {
+        return words
+            .filter((word) => word.length === this.settings.maxColumns)
+            .map((word) => word.toUpperCase());
+    },
+
+    buildValidatedDictionaries() {
+        return {
+            pt: this.validateWords(this.rawDictionaries.pt),
+            en: this.validateWords(this.rawDictionaries.en)
+        };
     },
 
     selectRandomWord(language) {
@@ -26,10 +58,37 @@ const GameModel = {
         return words[randomIndex].toUpperCase();
     },
 
+    evaluateGuess(guess) {
+        const feedback = [];
+
+        for (let columnIndex = 0; columnIndex < this.settings.maxColumns; columnIndex++) {
+            if (guess[columnIndex] === this.secretWord[columnIndex]) {
+                feedback.push({
+                    color: this.feedbackColors.correct,
+                    score: this.settings.correctScore
+                });
+            } else if (this.secretWord.includes(guess[columnIndex])) {
+                feedback.push({
+                    color: this.feedbackColors.present,
+                    score: this.settings.presentScore
+                });
+            } else {
+                feedback.push({
+                    color: this.feedbackColors.absent,
+                    score: 0
+                });
+            }
+        }
+
+        return feedback;
+    },
+
     startGame(language) {
         this.selectedLanguage = language;
         this.currentRow = 0;
         this.currentColumn = 0;
+        this.score = 0;
+        this.round = 1;
         this.isGameOver = false;
         this.board = this.createEmptyBoard();
         this.secretWord = this.selectRandomWord(language);
@@ -44,4 +103,5 @@ const GameModel = {
     }
 };
 
+GameModel.dictionaries = GameModel.buildValidatedDictionaries();
 GameModel.board = GameModel.createEmptyBoard();

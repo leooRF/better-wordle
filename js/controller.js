@@ -20,19 +20,13 @@ const GameController = {
             return;
         }
 
-        if (key === "ENTER" && GameModel.currentColumn === GameModel.maxColumns) {
+        if (key === "ENTER" && GameModel.currentColumn === GameModel.settings.maxColumns) {
             const userWord = GameModel.board[GameModel.currentRow].join("");
+            const feedback = GameModel.evaluateGuess(userWord);
 
-            for (let columnIndex = 0; columnIndex < GameModel.maxColumns; columnIndex++) {
-                if (userWord[columnIndex] === GameModel.secretWord[columnIndex]) {
-                    GameModel.score += GameModel.correctScore;
-                    GameView.paintTile(GameModel.currentRow, columnIndex, "#538d4e");
-                } else if (GameModel.secretWord.includes(userWord[columnIndex])) {
-                    GameModel.score += GameModel.presentScore;
-                    GameView.paintTile(GameModel.currentRow, columnIndex, "#b59f3b");
-                } else {
-                    GameView.paintTile(GameModel.currentRow, columnIndex, "#3a3a3c");
-                }
+            for (let columnIndex = 0; columnIndex < GameModel.settings.maxColumns; columnIndex++) {
+                GameModel.score += feedback[columnIndex].score;
+                GameView.paintTile(GameModel.currentRow, columnIndex, feedback[columnIndex].color);
             }
 
             GameView.updateScore(GameModel.score);
@@ -46,7 +40,7 @@ const GameController = {
                 GameModel.currentRow++;
                 GameModel.currentColumn = 0;
 
-                if (GameModel.currentRow === GameModel.maxRows) {
+                if (GameModel.currentRow === GameModel.settings.maxRows) {
                     GameView.showGameOverMessage(GameModel.secretWord);
                     GameModel.isGameOver = true;
                 }
@@ -55,7 +49,7 @@ const GameController = {
             return;
         }
 
-        if (/^[A-Z]$/.test(key) && GameModel.currentColumn < GameModel.maxColumns) {
+        if (/^[A-Z]$/.test(key) && GameModel.currentColumn < GameModel.settings.maxColumns) {
             GameModel.board[GameModel.currentRow][GameModel.currentColumn] = key;
             GameView.updateTileLetter(GameModel.currentRow, GameModel.currentColumn, key);
             GameModel.currentColumn++;
