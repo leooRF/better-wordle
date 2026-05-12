@@ -2,7 +2,24 @@
 
 Atividade de Engenharia de Software: Reengenharia completa de um software de jogo estilo Wordle.
 
-## Code Smells
+## Execução
+
+Abra o arquivo `index.html` no navegador para iniciar o jogo.
+
+## Estrutura Model-Viel-Controller
+
+- `index.html`: estrutura da interface
+- `style.css`: estilos da aplicação
+- `js/model.js`: estado do jogo, configurações, dicionários e regras
+- `js/view.js`: renderização do tabuleiro, mensagens e atualizações visuais
+- `js/controller.js`: tratamento de eventos e coordenação entre Model e View
+- `js/main.js`: inicialização da aplicação
+
+## Resumo das melhorias
+
+O projeto saiu de um único arquivo com um code noodle e passou a usar uma organização em MVC. Além disso, o estado do jogo foi centralizado no `Model`, os nomes das variáveis ficaram mais claros, os números mágicos foram agrupados em configurações e os dicionários passaram a ser validados para evitar palavras com tamanho incorreto.
+
+## Code Smells e soluções
 
 ### CS.1: God file (ausência de separação de responsabilidades)
 
@@ -14,7 +31,7 @@ Atividade de Engenharia de Software: Reengenharia completa de um software de jog
 
 Separamos o projeto em arquivos mais organizados. O `index.html` ficou com a estrutura, o `style.css` com a parte visual, o `model.js` com o estado e as regras do jogo, o `view.js` com a interface, o `controller.js` com os eventos e o `main.js` apenas com a inicialização.
 
-### CS.2: Alto acomplamento entre lógica e interface
+### CS.2: Alto acoplamento entre lógica e interface
 
 **Problema:** a lógica do jogo estava grudada na interface.
 
@@ -24,7 +41,7 @@ Separamos o projeto em arquivos mais organizados. O `index.html` ficou com a est
 
 Reduzimos esse acoplamento com a separação em MVC. O `GameModel` passou a cuidar do estado e das regras, o `GameView` ficou responsável por desenhar e atualizar a tela, e o `GameController` passou a receber os eventos e ligar uma camada na outra.
 
-### CS.3: Excesso de variáveis globais e nomes enigáticos
+### CS.3: Excesso de variáveis globais e nomes enigmáticos
 
 **Problema:** havia muitas variáveis globais e nomes pouco claros.
 
